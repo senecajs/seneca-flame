@@ -41,6 +41,7 @@
     "@types/jest": "^27.5.1",
     "esbuild": "^0.14.39",
     "esbuild-jest": "^0.5.0",
+    "express": "4.18.1",
     "jest": "^28.1.0",
     "seneca-msg-test": "^3.4.0",
     "typescript": "^4.6.4"
@@ -48,5 +49,9 @@
   "peerDependencies": {
     "seneca": ">=3",
     "seneca-promisify": ">=2"
+  },
+  "dependencies": {
+    "seneca": "3.28.2",
+    "seneca-promisify": "2.4.1"
   }
 }
