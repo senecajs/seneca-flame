@@ -45,5 +45,10 @@ function setupExpress(seneca) {
         res.send({ ...out, t:Date.now() })
       })
     })
+    .get('/p2', function p2(req, res) {
+      seneca.act('plugin:flame,command:get', function p2r(err, out, meta) {
+        res.send({ ...out })
+      });
+    })
     .listen(8000)
 }

@@ -2,11 +2,6 @@ import FlameDataQueue from "./FlameDataQueue";
 import FlameGraphStore from "./FlameGraphStore";
 import { FlameNode, NodeQueueData, SenecaSharedInstance, SpecData, SpecMetadata } from "./types";
 
-/*
-  FlameGraphStore => Manages the data in it's final form.
-  FlameDataQueue  => Manages the queue to process data
-*/
-
 function getParentFromMeta(meta: SpecMetadata): string | null {
   const { parents } = meta;
   if (!parents || parents.length === 0) {
@@ -37,13 +32,6 @@ function outwardHandler(seneca: any, spec: SpecData, options: any) {
     parent
   } as NodeQueueData;
   sharedInstance.flameDataQueue.push(nodeData);
-
-  setTimeout(() => {
-    console.log(
-      JSON.stringify(sharedInstance.flameGraphStore.get())
-      
-      );
-  }, 3000)
 }
 
 
@@ -74,6 +62,15 @@ function flame(this: any, options: any) {
     outwardHandler(seneca, finalData, options)
   })
 
+  seneca.add('role:seneca,cmd:close', function(this: any, _msg: any, reply: any) {
+    options.enabled = false;
+    reply();
+  });
+
+  seneca.add('plugin:flame,command:get', function (this: any, _msg: any, reply: any) {
+    const data = (seneca.shared.flameGraphStore as FlameGraphStore).get();
+    reply(data);
+  });
 }
 
 const defaults = {
