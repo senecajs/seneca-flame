@@ -1,9 +1,9 @@
 {
-  "name": "@seneca/gateway",
+  "name": "@seneca/flame",
   "version": "0.4.0",
-  "main": "dist/gateway.js",
+  "main": "dist/flame.js",
   "type": "commonjs",
-  "types": "dist/gateway.d.ts",
+  "types": "dist/flame.d.ts",
   "description": "Handle incoming messages within other frameworks.",
   "homepage": "https://github.com/senecajs/seneca-gateway",
   "keywords": [

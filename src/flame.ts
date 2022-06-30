@@ -11,6 +11,7 @@ function getParentFromMeta(meta: SpecMetadata): string | null {
 }
 
 function inwardHandler(seneca: any, spec: SpecData, options: any) {
+  // Doesn't do anything, for now.
 }
 
 function outwardHandler(seneca: any, spec: SpecData, options: any) {
