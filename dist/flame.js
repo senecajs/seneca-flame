@@ -61,6 +61,10 @@ function flame(options) {
         options.enabled = false;
         reply();
     });
+    seneca.add('role:seneca,plugin:flame,cmd:toggle', function (_msg, reply) {
+        options.enabled = !options.enabled;
+        reply();
+    });
     seneca.add('plugin:flame,command:get', function (_msg, reply) {
         const data = seneca.shared.flameGraphStore.get();
         reply(data);

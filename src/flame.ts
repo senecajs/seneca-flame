@@ -68,6 +68,11 @@ function flame(this: any, options: any) {
     reply();
   });
 
+  seneca.add('role:seneca,plugin:flame,cmd:toggle', function(this: any, _msg: any, reply: any) {
+    options.enabled = !options.enabled;
+    reply();
+  })
+
   seneca.add('plugin:flame,command:get', function (this: any, _msg: any, reply: any) {
     const data = (seneca.shared.flameGraphStore as FlameGraphStore).get();
     reply(data);
