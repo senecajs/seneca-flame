@@ -117,9 +117,7 @@ export default class FlameGraphStore {
     if (parentId) {
       const parentNode = this.findParentById(pluginNode, parentId)
       if (!parentNode) {
-        console.log('If it comes here, the code is in trouble')
-        console.log(pluginNode, pattern, id)
-        return
+        throw new Error("Caught a bug in FlameGraphStore.ts\nParent not found, even tough child has parent ID");
       }
       const actionNode = this.findParentByName(parentNode, pattern)
       if (actionNode) {
