@@ -31,18 +31,21 @@ function outwardHandler(seneca, spec, options) {
         action,
         name,
         executionTime,
-        parent
+        parent,
     };
     sharedInstance.flameDataQueue.push(nodeData);
 }
 function flame(options) {
     const seneca = this;
-    const flameGraphStore = new FlameGraphStore_1.default();
-    const flameDataQueue = new FlameDataQueue_1.default(flameGraphStore);
-    seneca.shared = {
-        flameDataQueue,
-        flameGraphStore,
-    };
+    this.init(function (done) {
+        const flameGraphStore = new FlameGraphStore_1.default();
+        const flameDataQueue = new FlameDataQueue_1.default(flameGraphStore);
+        seneca.shared = {
+            flameDataQueue,
+            flameGraphStore,
+        };
+        done();
+    });
     seneca.outward((ctxt, data) => {
         if (!options.enabled) {
             return;

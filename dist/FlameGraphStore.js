@@ -1,9 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/*
+ * Each instance of `FlameGraphStore` represents a FlameNode.
+*/
 class FlameGraphStore {
     constructor() {
         this.flameGraph = {
-            name: "root",
+            name: 'root',
             value: 0,
             children: [],
             _inner: {
@@ -12,7 +15,7 @@ class FlameGraphStore {
                 layer: 'root',
                 mean: 0,
                 sum: 0,
-            }
+            },
         };
     }
     buildFlameNode(name, value, id) {
@@ -25,8 +28,8 @@ class FlameGraphStore {
                 sum: value,
                 mean: value,
                 layer: 'action',
-                ids: [id]
-            }
+                ids: [id],
+            },
         };
     }
     updateFlameNode(node, value, id) {
@@ -87,8 +90,8 @@ class FlameGraphStore {
                     sum: value,
                     mean: value,
                     layer: 'plugin',
-                    ids: []
-                }
+                    ids: [],
+                },
             };
             this.flameGraph.children.push(basePluginFlameNode);
             return basePluginFlameNode;
@@ -99,7 +102,7 @@ class FlameGraphStore {
         if (parentId) {
             const parentNode = this.findParentById(pluginNode, parentId);
             if (!parentNode) {
-                console.log("If it comes here, the code is in trouble");
+                console.log('If it comes here, the code is in trouble');
                 console.log(pluginNode, pattern, id);
                 return;
             }
@@ -127,11 +130,17 @@ class FlameGraphStore {
     }
     handle(data) {
         const { pattern, action, executionTime, name, id, parent } = data;
-        const patternActionName = pattern || action || "no_pattern";
+        const patternActionName = pattern || action || 'no_pattern';
         const flameRootNode = this.handlePluginBaseInsertion(name, executionTime);
         if (parent) {
             const parentNode = this.findParentById(flameRootNode, parent);
             if (!parentNode) {
+                if (!data._limitCount) {
+                    data._limitCount = 1;
+                }
+                else {
+                    data._limitCount += 1;
+                }
                 return data;
             }
             this.handleActionInsertion(flameRootNode, patternActionName, id, executionTime, parent);

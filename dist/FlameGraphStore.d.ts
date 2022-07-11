@@ -1,4 +1,4 @@
-import { FlameNode, NodeQueueData } from "./types";
+import { FlameNode, NodeQueueData } from './types';
 export default class FlameGraphStore {
     private flameGraph;
     constructor();

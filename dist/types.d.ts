@@ -1,5 +1,5 @@
-import FlameDataQueue from "./FlameDataQueue";
-import FlameGraphStore from "./FlameGraphStore";
+import FlameDataQueue from './FlameDataQueue';
+import FlameGraphStore from './FlameGraphStore';
 export interface FlameNodeMetadata {
     count: number;
     ids: string[];
@@ -65,4 +65,5 @@ export declare type NodeQueueData = {
     name: string;
     executionTime: number;
     parent?: string;
+    _limitCount?: number;
 };

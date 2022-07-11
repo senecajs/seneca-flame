@@ -1,5 +1,5 @@
-import FlameGraphStore from "./FlameGraphStore";
-import { NodeQueueData } from "./types";
+import FlameGraphStore from './FlameGraphStore';
+import { NodeQueueData } from './types';
 export default class FlameDataQueue {
     private queue;
     private flameGraphStore;
