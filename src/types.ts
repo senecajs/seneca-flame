@@ -1,6 +1,10 @@
 import FlameDataQueue from './FlameDataQueue'
 import FlameGraphStore from './FlameGraphStore'
 
+/*
+ * This is the Metadata from each FlameNode,
+ * It's used internally to calculate some values.
+*/
 export interface FlameNodeMetadata {
   count: number
   ids: string[]
@@ -9,6 +13,9 @@ export interface FlameNodeMetadata {
   layer: string
 }
 
+/*
+ * This is the FlameNode that represents the tree-graph
+*/
 export interface FlameNode {
   name: string
   value: number
@@ -16,11 +23,17 @@ export interface FlameNode {
   _inner: FlameNodeMetadata
 }
 
+/*
+ * Seneca shared instances of FlameDataQueue and FlameGraphStore
+*/
 export interface SenecaSharedInstance {
   flameDataQueue: FlameDataQueue
   flameGraphStore: FlameGraphStore
 }
 
+/*
+ * Spec Metadata Plugin field values
+*/
 export interface SpecMetadataPlugin {
   full: string
   name: string
@@ -29,11 +42,17 @@ export interface SpecMetadataPlugin {
 
 export type SpecMetadataParent = string[]
 
+/*
+ * Spec trace from Ordu
+*/
 export interface SpecMetadataTrace {
   desc: SpecMetadataParent[]
   trace: SpecMetadataTrace[]
 }
 
+/*
+ * Spec Metadata from Ordu
+*/
 export interface SpecMetadata {
   start: number
   mi: string
@@ -59,6 +78,9 @@ export interface SpecMetadata {
   end: number
 }
 
+/*
+ * Spec data from Ordu
+*/
 export interface SpecData {
   meta: SpecMetadata
   msg: object
@@ -67,6 +89,10 @@ export interface SpecData {
   err?: string
 }
 
+/*
+ * This is the raw queue data
+ * That ideally will be turned into FlameNode
+*/
 export type NodeQueueData = {
   id: string
   pattern: string
