@@ -78,10 +78,11 @@ function flame(this: any, options: any) {
   )
 
   seneca.add(
-    'role:seneca,plugin:flame,cmd:toggle',
-    function (this: any, _msg: any, reply: any) {
-      options.enabled = !options.enabled
-      reply()
+    'role:seneca,plugin:flame',
+    function (this: any, msg: any, reply: any) {
+      const { capture } = msg;
+      options.enabled = Boolean(capture);
+      reply({ capture })
     }
   )
 

@@ -51,5 +51,10 @@ function setupExpress(seneca) {
         res.send({ ...out })
       });
     })
+    .get('/p3', function p3(req, res) {
+      seneca.act('role:seneca,plugin:flame,capture:true', function p3r(err, out, meta) {
+        res.send(out);
+      })
+    })
     .listen(8000)
 }
