@@ -78,7 +78,7 @@ function flame(this: any, options: any) {
   )
 
   seneca.add(
-    'role:seneca,plugin:flame',
+    'sys:flame',
     function (this: any, msg: any, reply: any) {
       const { capture } = msg;
       options.enabled = Boolean(capture);

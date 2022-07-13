@@ -52,7 +52,7 @@ function setupExpress(seneca) {
       });
     })
     .get('/p3', function p3(req, res) {
-      seneca.act('role:seneca,plugin:flame,capture:true', function p3r(err, out, meta) {
+      seneca.act('sys:flame,capture:true', function p3r(err, out, meta) {
         res.send(out);
       })
     })
