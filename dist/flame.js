@@ -64,7 +64,7 @@ function flame(options) {
         options.enabled = false;
         reply();
     });
-    seneca.add('role:seneca,plugin:flame', function (msg, reply) {
+    seneca.add('sys:flame', function (msg, reply) {
         const { capture } = msg;
         options.enabled = Boolean(capture);
         reply({ capture });
