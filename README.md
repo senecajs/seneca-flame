@@ -17,12 +17,18 @@ Handle incoming messages within other frameworks.
 | ---------------------------------------------------- | --------------------------------------------------------------------------------------- |
 
 ## Install
+`npm install @seneca/flame`
 
 ## Quick Example
+At the top of your seneca plugins, just import seneca-flame:
+`seneca.use('flame')`
+For now on, every action performed by seneca will be accounted in the flamegraph data structure, and you can get your flame graph data using
+`plugin:flame,command:get`
 
 ## More Examples
 
 ## Motivation
+The motivation behind this is to improve our seneca debug tools and have a tool where we can collect trace data in an structured way.
 
 ## Support
 

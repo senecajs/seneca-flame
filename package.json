@@ -1,9 +1,9 @@
 {
-  "name": "@seneca/gateway",
+  "name": "@seneca/flame",
   "version": "0.4.0",
-  "main": "dist/gateway.js",
+  "main": "dist/flame.js",
   "type": "commonjs",
-  "types": "dist/gateway.d.ts",
+  "types": "dist/flame.d.ts",
   "description": "Handle incoming messages within other frameworks.",
   "homepage": "https://github.com/senecajs/seneca-gateway",
   "keywords": [
@@ -25,7 +25,8 @@
     "reset": "npm run clean && npm i && npm test",
     "repo-tag": "REPO_VERSION=`node -e \"console.log(require('./package').version)\"` && echo TAG: v$REPO_VERSION && git commit -a -m v$REPO_VERSION && git push && git tag v$REPO_VERSION && git push --tags;",
     "repo-publish": "npm run clean && npm i && npm run repo-publish-quick",
-    "repo-publish-quick": "npm run build && npm run test && npm run repo-tag && npm publish --access public --registry https://registry.npmjs.org "
+    "repo-publish-quick": "npm run build && npm run test && npm run repo-tag && npm publish --access public --registry https://registry.npmjs.org ",
+    "prettier": "prettier --write --no-semi --single-quote *.ts src/*.ts"
   },
   "license": "MIT",
   "files": [
@@ -38,11 +39,15 @@
   },
   "devDependencies": {
     "@seneca/maintain": "^0.0.22",
+    "@seneca/repl": "^4.0.1",
     "@types/jest": "^27.5.1",
     "esbuild": "^0.14.39",
     "esbuild-jest": "^0.5.0",
+    "express": "4.18.1",
     "jest": "^28.1.0",
+    "seneca": "3.28.2",
     "seneca-msg-test": "^3.4.0",
+    "seneca-promisify": "2.4.1",
     "typescript": "^4.6.4"
   },
   "peerDependencies": {
