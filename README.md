@@ -34,6 +34,17 @@ The motivation behind this is to improve our seneca debug tools and have a tool 
 
 ## API
 
+## Data structure and algorithm
+The flame data structure is created using a tree algorithm, where
+the first (root) layer is inserted by default, the second layer of trees
+are always the name of the plugins, and the third and subsequential layers
+are the children actions of each of those plugins.
+Each node of the tree have those values:
+ - name: The name of the action or plugin
+ - value: The mean of time an action took
+ - children: A list of children to this plugin/action
+ - _inner: A set of metadata's of the node.
+
 ## Contributing
 
 ## Background
