@@ -47,7 +47,7 @@ function setupExpress(seneca) {
       })
     })
     .get('/p2', function p2(req, res) {
-      seneca.act('plugin:flame,command:get', function p2r(err, out, meta) {
+      seneca.act('plugin:flame,command:get,cached:true', function p2r(err, out, meta) {
         res.send({ ...out })
       });
     })

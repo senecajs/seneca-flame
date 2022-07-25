@@ -6,6 +6,8 @@ import {
   SpecData,
   SpecMetadata,
 } from './types'
+import isEqual from 'lodash/isEqual';
+import cloneDeep from 'lodash/cloneDeep';
 
 function getParentFromMeta(meta: SpecMetadata): string | null {
   const { parents } = meta
@@ -27,6 +29,9 @@ function outwardHandler(seneca: any, spec: SpecData, options: any) {
   const { meta } = spec
   const { id, pattern, action, end, start, plugin } = meta
   const { name } = plugin
+  if (name === 'debug' || name === 'flame') {
+    return;
+  }
   const executionTime = end - start
   const parent = getParentFromMeta(meta)
   const nodeData = {
@@ -88,9 +93,17 @@ function flame(this: any, options: any) {
 
   seneca.add(
     'plugin:flame,command:get',
-    function (this: any, _msg: any, reply: any) {
+    function (this: any, msg: any, reply: any) {
+      const { cached } = msg;
       const data = (seneca.shared.flameGraphStore as FlameGraphStore).get()
-      reply(data)
+      if (!cached) {
+        reply(data)
+      } else if (isEqual(data, seneca.shared.flameGraphSnapshot)) {
+        reply({ data: false });
+      } else {
+        seneca.shared.flameGraphSnapshot = cloneDeep(data);
+        reply(data);
+      }
     }
   )
 }

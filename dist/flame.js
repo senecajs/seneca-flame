@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const FlameDataQueue_1 = __importDefault(require("./FlameDataQueue"));
 const FlameGraphStore_1 = __importDefault(require("./FlameGraphStore"));
+const isEqual_1 = __importDefault(require("lodash/isEqual"));
+const cloneDeep_1 = __importDefault(require("lodash/cloneDeep"));
 function getParentFromMeta(meta) {
     const { parents } = meta;
     if (!parents || parents.length === 0) {
@@ -23,6 +25,9 @@ function outwardHandler(seneca, spec, options) {
     const { meta } = spec;
     const { id, pattern, action, end, start, plugin } = meta;
     const { name } = plugin;
+    if (name === 'debug' || name === 'flame') {
+        return;
+    }
     const executionTime = end - start;
     const parent = getParentFromMeta(meta);
     const nodeData = {
@@ -69,9 +74,19 @@ function flame(options) {
         options.enabled = Boolean(capture);
         reply({ capture });
     });
-    seneca.add('plugin:flame,command:get', function (_msg, reply) {
+    seneca.add('plugin:flame,command:get', function (msg, reply) {
+        const { cached } = msg;
         const data = seneca.shared.flameGraphStore.get();
-        reply(data);
+        if (!cached) {
+            reply(data);
+        }
+        else if ((0, isEqual_1.default)(data, seneca.shared.flameGraphSnapshot)) {
+            reply({ data: false });
+        }
+        else {
+            seneca.shared.flameGraphSnapshot = (0, cloneDeep_1.default)(data);
+            reply(data);
+        }
     });
 }
 const defaults = {
