@@ -142,7 +142,7 @@ export default class FlameGraphStore {
 
   handle(data: NodeQueueData): boolean | NodeQueueData {
     const { pattern, action, executionTime, name, id, parent } = data
-    const patternActionName = pattern || action || 'no_pattern'
+    const patternActionName = `${action} : ${pattern}`
     const flameRootNode = this.handlePluginBaseInsertion(name, executionTime)
     if (parent) {
       const parentNode = this.findParentById(flameRootNode, parent)
