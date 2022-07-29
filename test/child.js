@@ -18,7 +18,7 @@ let seneca = Seneca({legacy:false})
           console.log(meta)
           let start = Date.now()
           setTimeout(()=>{
-            reply({x:msg.x+1, f1:Date.now()-start})
+            reply({x:msg.x+1, f3:Date.now()-start})
           },100)
         })
         .add('bb:2', function f2(msg, reply) {
@@ -36,7 +36,7 @@ let seneca = Seneca({legacy:false})
           setTimeout(()=>{
             this.act({bb:2,x:msg.x}, (err, out)=>{
               out.x+=3
-              out.f3 = Date.now()-start
+              out.f1 = Date.now()-start
               reply(out)
             })
           },100)
