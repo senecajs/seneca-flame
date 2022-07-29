@@ -14,27 +14,27 @@ let seneca = Seneca({legacy:false})
 
     .use(function foo() {
       this
-        .add('c:3', function f3(msg, reply, meta) {
+        .add('cc:3', function f3(msg, reply, meta) {
           console.log(meta)
           let start = Date.now()
           setTimeout(()=>{
             reply({x:msg.x+1, f1:Date.now()-start})
           },100)
         })
-        .add('b:2', function f2(msg, reply) {
+        .add('bb:2', function f2(msg, reply) {
           let start = Date.now()
           setTimeout(()=>{
-            this.act({c:3,x:msg.x}, (err, out)=>{
+            this.act({cc:3,x:msg.x}, (err, out)=>{
               out.x+=2
               out.f2 = Date.now()-start
               reply(out)
             })
           },100)
         })
-        .add('a:1', function f1(msg, reply) {
+        .add('aa:1', function f1(msg, reply) {
           let start = Date.now()
           setTimeout(()=>{
-            this.act({b:2,x:msg.x}, (err, out)=>{
+            this.act({bb:2,x:msg.x}, (err, out)=>{
               out.x+=3
               out.f3 = Date.now()-start
               reply(out)
