@@ -8,6 +8,7 @@ import {
 } from './types'
 import isEqual from 'lodash/isEqual';
 import cloneDeep from 'lodash/cloneDeep';
+import { Snapshot } from './Snapshot/Snapshot';
 
 function getParentFromMeta(meta: SpecMetadata): string | null {
   const { parents } = meta
@@ -59,7 +60,7 @@ function flame(this: any, options: any) {
   })
 
   seneca.outward((ctxt: any, data: any) => {
-    if (!options.enabled) {
+    if (!options.capture) {
       return
     }
     const finalData = ctxt.data || data
@@ -67,7 +68,7 @@ function flame(this: any, options: any) {
   })
 
   seneca.outward((ctxt: any, data: any) => {
-    if (!options.enabled) {
+    if (!options.capture) {
       return
     }
     const finalData = ctxt.data || data
@@ -77,7 +78,7 @@ function flame(this: any, options: any) {
   seneca.add(
     'role:seneca,cmd:close',
     function (this: any, _msg: any, reply: any) {
-      options.enabled = false
+      options.capture = false
       reply()
     }
   )
@@ -86,13 +87,13 @@ function flame(this: any, options: any) {
     'sys:flame',
     function (this: any, msg: any, reply: any) {
       const { capture } = msg;
-      options.enabled = Boolean(capture);
+      options.capture = Boolean(capture);
       reply({ capture })
     }
   )
 
   seneca.add(
-    'plugin:flame,command:get',
+    'sys:flame,cmd:get',
     function (this: any, msg: any, reply: any) {
       const { cached } = msg;
       const data = (seneca.shared.flameGraphStore as FlameGraphStore).get()
@@ -106,10 +107,34 @@ function flame(this: any, options: any) {
       }
     }
   )
+
+  seneca.add(
+    'sys:flame,cmd:snapshot',
+    function generateFlameSnapshot(this: any, msg: any, reply: any) {
+      const validFormats = ['json', 'html'];
+      const { format } = msg;
+      if (!format || !validFormats.includes(format)) {
+        reply({ message: 'No format found.'});
+      }
+      const { generateJson, generateHtml } = Snapshot(seneca);
+      switch (format) {
+        case 'json':
+          generateJson()
+            .then((response) => reply(response));
+          return;
+        case 'html':
+          generateHtml()
+            .then((response) => reply(response));
+          return;
+        default:
+          reply({ message: 'No format found.'});
+      }
+    }
+  )
 }
 
 const defaults = {
-  enabled: true,
+  capture: false,
 }
 
 function preload(seneca: any) {}

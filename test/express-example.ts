@@ -11,7 +11,7 @@ function setupSeneca() {
   Seneca()
     .test()
     .use('repl')
-    .use(FlamePlugin)
+    .use(FlamePlugin, { capture: true })
     .add('a:1', function a1(msg, reply, meta) {
       setTimeout(()=>{
         this.act('b:1', {x:msg.x}, function(err, out) {

@@ -7,6 +7,7 @@ const FlameDataQueue_1 = __importDefault(require("./FlameDataQueue"));
 const FlameGraphStore_1 = __importDefault(require("./FlameGraphStore"));
 const isEqual_1 = __importDefault(require("lodash/isEqual"));
 const cloneDeep_1 = __importDefault(require("lodash/cloneDeep"));
+const Snapshot_1 = require("./Snapshot/Snapshot");
 function getParentFromMeta(meta) {
     const { parents } = meta;
     if (!parents || parents.length === 0) {
@@ -52,29 +53,29 @@ function flame(options) {
         done();
     });
     seneca.outward((ctxt, data) => {
-        if (!options.enabled) {
+        if (!options.capture) {
             return;
         }
         const finalData = ctxt.data || data;
         inwardHandler(seneca, finalData, options);
     });
     seneca.outward((ctxt, data) => {
-        if (!options.enabled) {
+        if (!options.capture) {
             return;
         }
         const finalData = ctxt.data || data;
         outwardHandler(seneca, finalData, options);
     });
     seneca.add('role:seneca,cmd:close', function (_msg, reply) {
-        options.enabled = false;
+        options.capture = false;
         reply();
     });
     seneca.add('sys:flame', function (msg, reply) {
         const { capture } = msg;
-        options.enabled = Boolean(capture);
+        options.capture = Boolean(capture);
         reply({ capture });
     });
-    seneca.add('plugin:flame,command:get', function (msg, reply) {
+    seneca.add('sys:flame,cmd:get', function (msg, reply) {
         const { cached } = msg;
         const data = seneca.shared.flameGraphStore.get();
         if (!cached) {
@@ -88,9 +89,29 @@ function flame(options) {
             reply(data);
         }
     });
+    seneca.add('sys:flame,cmd:snapshot', function generateFlameSnapshot(msg, reply) {
+        const validFormats = ['json', 'html'];
+        const { format } = msg;
+        if (!format || !validFormats.includes(format)) {
+            reply({ message: 'No format found.' });
+        }
+        const { generateJson, generateHtml } = (0, Snapshot_1.Snapshot)(seneca);
+        switch (format) {
+            case 'json':
+                generateJson()
+                    .then((response) => reply(response));
+                return;
+            case 'html':
+                generateHtml()
+                    .then((response) => reply(response));
+                return;
+            default:
+                reply({ message: 'No format found.' });
+        }
+    });
 }
 const defaults = {
-    enabled: true,
+    capture: false,
 };
 function preload(seneca) { }
 Object.assign(flame, { defaults, preload });
