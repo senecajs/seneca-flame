@@ -23,7 +23,7 @@ describe('flame', () => {
     const seneca = Seneca({ legacy: false })
       .test()
       .use('promisify')
-      .use(Flame)
+      .use(Flame, { capture: true })
       .add('a:1', function b1(msg, reply, meta) {
         setTimeout(()=>{
           reply({x:1+msg.x})
@@ -35,10 +35,10 @@ describe('flame', () => {
 
       await sleep(1000);
 
-      const flameChart = await seneca.post('plugin:flame,command:get');
+      const flameChart = await seneca.post('sys:flame,cmd:get');
       const { children } = flameChart;
       expect(children).toBeInstanceOf(Array);
-      expect(children).toHaveLength(2);
+      expect(children).toHaveLength(1);
 
       const rootPlugin = flameChart.children.find((c) => c.name === "root$");
       expect(rootPlugin).not.toBeNull();
