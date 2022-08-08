@@ -31,8 +31,8 @@ class FlameDataQueue {
                 if (current) {
                     const response = this.flameGraphStore.handle(current);
                     if (typeof response !== 'boolean') {
-                        if (response._limitCount && response._limitCount !== 3) {
-                            this.queue.push(response);
+                        if (response._limitCount && response._limitCount !== 5) {
+                            this.queue.unshift(response);
                         }
                     }
                 }

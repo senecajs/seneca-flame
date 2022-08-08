@@ -10,19 +10,40 @@ setupSeneca()
 function setupSeneca() {
   Seneca()
     .test()
-    .use('repl')
+    .use('repl', { port: 10015 })
+    .use('debug', {
+			express: {
+				port: 8890,
+				host: 'localhost',
+			},
+			ws: {
+				port: 8891,
+			},
+			wspath: '/debug',
+			store: false,
+			test: false,
+			prod: false,
+			flame: true,
+		})
     .use(FlamePlugin, { capture: true })
-    .add('a:1', function a1(msg, reply, meta) {
+    .add('a:1', function actionC(msg, reply, meta) {
       setTimeout(()=>{
         this.act('b:1', {x:msg.x}, function(err, out) {
           reply({x:2*out.x})
         })
       }, 400+(400*Math.random()))
     })
-    .add('a:1', function a1p(msg, reply, meta) {
+    .add('a:1', function actionB(msg, reply, meta) {
+      setTimeout(()=>{
+        this.prior(msg, function (err, out) {
+          reply({ x: out.x + 2 })
+        })
+      }, 400+(400*Math.random()))
+    })
+    .add('a:1', function actionA(msg, reply, meta) {
       setTimeout(()=>{
         this.prior(msg, function(err, out) {
-          reply({x:out.x+0.5})
+          reply({ x:out.x+ 1 })
         })
       }, 400+(400*Math.random()))
     })
@@ -47,7 +68,7 @@ function setupExpress(seneca) {
       })
     })
     .get('/p2', function p2(req, res) {
-      seneca.act('plugin:flame,command:get,cached:true', function p2r(err, out, meta) {
+      seneca.act('sys:flame,cmd:get,cached:true', function p2r(err, out, meta) {
         res.send({ ...out })
       });
     })
@@ -56,5 +77,15 @@ function setupExpress(seneca) {
         res.send(out);
       })
     })
-    .listen(8000)
+    .get('/snapshot-json', function snapshotJson(req, res) {
+      seneca.act('sys:flame,cmd:snapshot,format:json', function snapshotJsonResponse(err, out, meta) {
+        res.send(out);
+      })
+    })
+    .get('/snapshot-html', function snapshotHtml(req, res) {
+      seneca.act('sys:flame,cmd:snapshot,format:html', function snapshotJsonResponse(err, out, meta) {
+        res.send(out);
+      })
+    })
+    .listen(8005)
 }
