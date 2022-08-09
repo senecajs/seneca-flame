@@ -26,11 +26,13 @@ function Snapshot(seneca) {
         const replaces = [
             {
                 pattern: '$JSON_FILE',
-                to: filename,
+                to: filename.split('/').at(-1),
             }
         ];
         for (const { pattern, to } of replaces) {
-            baseHtml = baseHtml.replace(pattern, to);
+            if (to) {
+                baseHtml = baseHtml.replace(pattern, to);
+            }
         }
         const htmlFile = `${folderPath}/index.html`;
         await writeFileAsync(htmlFile, baseHtml, { encoding: 'utf-8' });

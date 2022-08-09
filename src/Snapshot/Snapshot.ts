@@ -33,7 +33,9 @@ export function Snapshot(seneca: any) {
       }
     ]
     for (const { pattern, to } of replaces) {
-      baseHtml = baseHtml.replace(pattern, to)
+      if (to) {
+        baseHtml = baseHtml.replace(pattern, to)
+      }
     }
     const htmlFile = `${folderPath}/index.html`
     await writeFileAsync(htmlFile, baseHtml, { encoding: 'utf-8' })
