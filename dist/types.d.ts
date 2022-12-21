@@ -22,7 +22,7 @@ export interface SpecMetadataPlugin {
     name: string;
     fullname: string;
 }
-export declare type SpecMetadataParent = string[];
+export type SpecMetadataParent = string[];
 export interface SpecMetadataTrace {
     desc: SpecMetadataParent[];
     trace: SpecMetadataTrace[];
@@ -58,7 +58,7 @@ export interface SpecData {
     has_callback: boolean;
     err?: string;
 }
-export declare type NodeQueueData = {
+export type NodeQueueData = {
     id: string;
     pattern: string;
     action: string;

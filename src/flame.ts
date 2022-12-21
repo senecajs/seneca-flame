@@ -131,6 +131,13 @@ function flame(this: any, options: any) {
       }
     }
   )
+
+  seneca.add(
+    'sys:flame,cmd:capture_status',
+    function checkCaptureStatus(this: any, msg: any, reply: any) {
+      reply({ status: options.capture })
+    }
+  )
 }
 
 const defaults = {

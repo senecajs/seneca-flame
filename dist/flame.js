@@ -109,6 +109,10 @@ function flame(options) {
                 reply({ message: 'No format found.' });
         }
     });
+    seneca.add('sys:flame,cmd:capture_status', function checkCaptureStatus(msg, reply) {
+        console.log('aqui', options);
+        reply({ status: options.capture });
+    });
 }
 const defaults = {
     capture: false,
