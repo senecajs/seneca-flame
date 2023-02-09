@@ -16,7 +16,17 @@ export interface FlameNode {
 export interface SenecaSharedInstance {
     flameDataQueue: FlameDataQueue;
     flameGraphStore: FlameGraphStore;
+    frameRecordings: FlameRecord[];
 }
+/**
+ *
+ */
+export type FlameRecord = {
+    id: string;
+    state: 'on' | 'off' | 'destroyed';
+    flameDataQueue: FlameDataQueue;
+    flameGraphStore: FlameGraphStore;
+};
 export interface SpecMetadataPlugin {
     full: string;
     name: string;

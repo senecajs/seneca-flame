@@ -11,6 +11,7 @@ function setupSeneca() {
   Seneca()
     .test()
     .use('repl', { port: 10015 })
+    /*
     .use('debug', {
 			express: {
 				port: 8890,
@@ -25,6 +26,7 @@ function setupSeneca() {
 			prod: false,
 			flame: true,
 		})
+    */
     .use(FlamePlugin, { capture: true })
     .add('a:1', function actionC(msg, reply, meta) {
       setTimeout(()=>{
@@ -85,6 +87,17 @@ function setupExpress(seneca) {
     .get('/snapshot-html', function snapshotHtml(req, res) {
       seneca.act('sys:flame,cmd:snapshot,format:html', function snapshotJsonResponse(err, out, meta) {
         res.send(out);
+      })
+    })
+    .get('/create-frame', function createFrame(req, res) {
+      seneca.act('sys:flame,cmd:create_frame', function createFlameFrameResponse(err, out, meta) {
+        res.send(out);
+      })
+    })
+    .get('/get-frame', function getFrame(req, res) {
+      const { id } = req.query;
+      seneca.act(`sys:flame,cmd:get_frame,id:${id}`, function getFrameResponse(err, out, meta) {
+        res.send(out)
       })
     })
     .listen(8005)
