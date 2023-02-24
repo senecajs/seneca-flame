@@ -62,8 +62,10 @@ function flame(options) {
         const nodeQueueData = outwardHandler(finalData, options);
         if (nodeQueueData) {
             if (options.capture) {
+                ;
                 seneca.shared.flameDataQueue.push(nodeQueueData);
             }
+            ;
             seneca.shared.frameRecordings.forEach((frameRecord) => {
                 if (frameRecord.state === 'on') {
                     frameRecord.flameDataQueue.push(nodeQueueData);
@@ -103,12 +105,10 @@ function flame(options) {
         const { generateJson, generateHtml } = (0, Snapshot_1.Snapshot)(seneca);
         switch (format) {
             case 'json':
-                generateJson()
-                    .then((response) => reply(response));
+                generateJson().then((response) => reply(response));
                 return;
             case 'html':
-                generateHtml()
-                    .then((response) => reply(response));
+                generateHtml().then((response) => reply(response));
                 return;
             default:
                 reply({ message: 'No format found.' });
@@ -133,26 +133,38 @@ function flame(options) {
     seneca.add('sys:flame,cmd:toggle_frame', function pauseFlameFrame(msg, reply) {
         const { id, state } = msg;
         if (!id || !state || (state !== 'on' && state !== 'off')) {
-            return reply({ success: false, error: "Missing or incorrect parameter values, please provide 'id' and 'status' ('on'|'off') parameters" });
+            return reply({
+                success: false,
+                error: "Missing or incorrect parameter values, please provide 'id' and 'status' ('on'|'off') parameters",
+            });
         }
         const frame = seneca.shared.frameRecordings.find((frameRecord) => frameRecord.id === id);
         if (!frame) {
-            return reply({ success: false, error: "No 'FrameRecord' was found for the given 'id' parameter" });
+            return reply({
+                success: false,
+                error: "No 'FrameRecord' was found for the given 'id' parameter",
+            });
         }
         const oldFrames = seneca.shared.frameRecordings.filter((frameRecord) => frameRecord.id !== id);
         seneca.shared.frameRecordings = [
             ...oldFrames,
-            { ...frame, state }
+            { ...frame, state },
         ];
     });
     seneca.add('sys:flame,cmd:get_frame', function getFlameFrame(msg, reply) {
         const { id } = msg;
         if (!id) {
-            return reply({ success: false, error: "Missing or incorrect parameter values, please provide 'id' parameter" });
+            return reply({
+                success: false,
+                error: "Missing or incorrect parameter values, please provide 'id' parameter",
+            });
         }
         const frame = seneca.shared.frameRecordings.find((frameRecord) => frameRecord.id === id);
         if (!frame) {
-            return reply({ success: false, error: "No 'FrameRecord' was found for the given 'id' parameter" });
+            return reply({
+                success: false,
+                error: "No 'FrameRecord' was found for the given 'id' parameter",
+            });
         }
         const data = frame.flameGraphStore.get();
         reply({ success: true, data });
@@ -160,11 +172,17 @@ function flame(options) {
     seneca.add('sys:flame,cmd:destroy_flame', function destroyFlameFrame(msg, reply) {
         const { id } = msg;
         if (!id) {
-            return reply({ success: false, error: "Missing or incorrect parameter values, please provide 'id' parameter" });
+            return reply({
+                success: false,
+                error: "Missing or incorrect parameter values, please provide 'id' parameter",
+            });
         }
         const frame = seneca.shared.frameRecordings.find((frameRecord) => frameRecord.id === id);
         if (!frame) {
-            return reply({ success: false, error: "No 'FrameRecord' was found for the given 'id' parameter" });
+            return reply({
+                success: false,
+                error: "No 'FrameRecord' was found for the given 'id' parameter",
+            });
         }
         const data = frame.flameGraphStore.get();
         const newFrameRecords = seneca.shared.frameRecordings.filter((frameRecord) => frameRecord.id !== id);

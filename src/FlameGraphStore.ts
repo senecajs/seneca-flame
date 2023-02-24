@@ -2,7 +2,7 @@ import { FlameNode, NodeQueueData } from './types'
 
 /*
  * Each instance of `FlameGraphStore` represents a FlameNode.
-*/
+ */
 export default class FlameGraphStore {
   private flameGraph: FlameNode
 
@@ -117,7 +117,9 @@ export default class FlameGraphStore {
     if (parentId) {
       const parentNode = this.findParentById(pluginNode, parentId)
       if (!parentNode) {
-        throw new Error("Caught a bug in FlameGraphStore.ts\nParent not found, even tough child has parent ID");
+        throw new Error(
+          'Caught a bug in FlameGraphStore.ts\nParent not found, even tough child has parent ID'
+        )
       }
       const actionNode = this.findParentByName(parentNode, pattern)
       if (actionNode) {

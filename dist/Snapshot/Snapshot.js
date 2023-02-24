@@ -16,7 +16,10 @@ function Snapshot(seneca) {
         }
         const jsonFile = `${folderPath}/${now}-snapshot.json`;
         await writeFileAsync(jsonFile, JSON.stringify(data), { encoding: 'utf-8' });
-        return { message: `File ${jsonFile} was successfully written`, filename: jsonFile };
+        return {
+            message: `File ${jsonFile} was successfully written`,
+            filename: jsonFile,
+        };
     };
     const generateHtml = async (folder) => {
         const now = Date.now();
@@ -27,7 +30,7 @@ function Snapshot(seneca) {
             {
                 pattern: '$JSON_FILE',
                 to: filename.split('/').at(-1),
-            }
+            },
         ];
         for (const { pattern, to } of replaces) {
             if (to) {
@@ -36,7 +39,10 @@ function Snapshot(seneca) {
         }
         const htmlFile = `${folderPath}/index.html`;
         await writeFileAsync(htmlFile, baseHtml, { encoding: 'utf-8' });
-        return { message: `File ${htmlFile} was successfully written`, filename: htmlFile };
+        return {
+            message: `File ${htmlFile} was successfully written`,
+            filename: htmlFile,
+        };
     };
     return { generateJson, generateHtml };
 }
