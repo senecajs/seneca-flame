@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto'
 import FlameDataQueue from './FlameDataQueue'
 import FlameGraphStore from './FlameGraphStore'
 import {
@@ -5,10 +6,11 @@ import {
   SenecaSharedInstance,
   SpecData,
   SpecMetadata,
+  FlameRecord,
 } from './types'
-import isEqual from 'lodash/isEqual';
-import cloneDeep from 'lodash/cloneDeep';
-import { Snapshot } from './Snapshot/Snapshot';
+import isEqual from 'lodash/isEqual'
+import cloneDeep from 'lodash/cloneDeep'
+import { Snapshot } from './Snapshot/Snapshot'
 
 function getParentFromMeta(meta: SpecMetadata): string | null {
   const { parents } = meta
@@ -19,23 +21,22 @@ function getParentFromMeta(meta: SpecMetadata): string | null {
 }
 
 function inwardHandler(seneca: any, spec: SpecData, options: any) {
-  // Doesn't do anything, for now.
+  // Doesn't do anything.
 }
 
-function outwardHandler(seneca: any, spec: SpecData, options: any) {
+function outwardHandler(spec: SpecData, options: any) {
   if (spec.err) {
     // TODO: Handle error cases.
   }
-  const sharedInstance = seneca.shared as SenecaSharedInstance
   const { meta } = spec
   const { id, pattern, action, end, start, plugin } = meta
   const { name } = plugin
   if (name === 'debug' || name === 'flame') {
-    return;
+    return
   }
   const executionTime = end - start
   const parent = getParentFromMeta(meta)
-  const nodeData = {
+  return {
     id,
     pattern,
     action,
@@ -43,36 +44,47 @@ function outwardHandler(seneca: any, spec: SpecData, options: any) {
     executionTime,
     parent,
   } as NodeQueueData
-  sharedInstance.flameDataQueue.push(nodeData)
 }
 
 function flame(this: any, options: any) {
   const seneca = this
 
-  this.init(function(done: () => any) {
+  this.init(function (done: () => any) {
     const flameGraphStore = new FlameGraphStore()
     const flameDataQueue = new FlameDataQueue(flameGraphStore)
     seneca.shared = {
       flameDataQueue,
       flameGraphStore,
+      frameRecordings: [],
     } as SenecaSharedInstance
-    done();
+    done()
   })
 
   seneca.outward((ctxt: any, data: any) => {
-    if (!options.capture) {
-      return
+    if (options.capture) {
+      const length = (
+        seneca.shared as SenecaSharedInstance
+      ).frameRecordings.filter(
+        (frameRecord) => frameRecord.state === 'on'
+      ).length
+      if (!length) return
     }
     const finalData = ctxt.data || data
-    inwardHandler(seneca, finalData, options)
-  })
-
-  seneca.outward((ctxt: any, data: any) => {
-    if (!options.capture) {
-      return
+    const nodeQueueData = outwardHandler(finalData, options)
+    if (nodeQueueData) {
+      if (options.capture) {
+        ;(seneca.shared as SenecaSharedInstance).flameDataQueue.push(
+          nodeQueueData
+        )
+      }
+      ;(seneca.shared as SenecaSharedInstance).frameRecordings.forEach(
+        (frameRecord) => {
+          if (frameRecord.state === 'on') {
+            frameRecord.flameDataQueue.push(nodeQueueData)
+          }
+        }
+      )
     }
-    const finalData = ctxt.data || data
-    outwardHandler(seneca, finalData, options)
   })
 
   seneca.add(
@@ -83,52 +95,152 @@ function flame(this: any, options: any) {
     }
   )
 
-  seneca.add(
-    'sys:flame',
-    function (this: any, msg: any, reply: any) {
-      const { capture } = msg;
-      options.capture = Boolean(capture);
-      reply({ capture })
-    }
-  )
+  seneca.add('sys:flame', function (this: any, msg: any, reply: any) {
+    const { capture } = msg
+    options.capture = Boolean(capture)
+    reply({ capture })
+  })
 
-  seneca.add(
-    'sys:flame,cmd:get',
-    function (this: any, msg: any, reply: any) {
-      const { cached } = msg;
-      const data = (seneca.shared.flameGraphStore as FlameGraphStore).get()
-      if (!cached) {
-        reply(data)
-      } else if (isEqual(data, seneca.shared.flameGraphSnapshot)) {
-        reply({ data: false });
-      } else {
-        seneca.shared.flameGraphSnapshot = cloneDeep(data);
-        reply(data);
-      }
+  seneca.add('sys:flame,cmd:get', function (this: any, msg: any, reply: any) {
+    const { cached } = msg
+    const data = (seneca.shared.flameGraphStore as FlameGraphStore).get()
+    if (!cached) {
+      reply(data)
+    } else if (isEqual(data, seneca.shared.flameGraphSnapshot)) {
+      reply({ data: false })
+    } else {
+      seneca.shared.flameGraphSnapshot = cloneDeep(data)
+      reply(data)
     }
-  )
+  })
 
   seneca.add(
     'sys:flame,cmd:snapshot',
     function generateFlameSnapshot(this: any, msg: any, reply: any) {
-      const validFormats = ['json', 'html'];
-      const { format } = msg;
+      const validFormats = ['json', 'html']
+      const { format } = msg
       if (!format || !validFormats.includes(format)) {
-        reply({ message: 'No format found.'});
+        reply({ message: 'No format found.' })
       }
-      const { generateJson, generateHtml } = Snapshot(seneca);
+      const { generateJson, generateHtml } = Snapshot(seneca)
       switch (format) {
         case 'json':
-          generateJson()
-            .then((response) => reply(response));
-          return;
+          generateJson().then((response) => reply(response))
+          return
         case 'html':
-          generateHtml()
-            .then((response) => reply(response));
-          return;
+          generateHtml().then((response) => reply(response))
+          return
         default:
-          reply({ message: 'No format found.'});
+          reply({ message: 'No format found.' })
       }
+    }
+  )
+
+  seneca.add(
+    'sys:flame,cmd:capture_status',
+    function checkCaptureStatus(this: any, msg: any, reply: any) {
+      reply({ status: options.capture })
+    }
+  )
+
+  seneca.add(
+    'sys:flame,cmd:create_frame',
+    function createFlameFrame(this: any, msg: any, reply: any) {
+      const flameGraphStore = new FlameGraphStore()
+      const flameDataQueue = new FlameDataQueue(flameGraphStore)
+      const id = randomUUID()
+      const flameRecord: FlameRecord = {
+        id,
+        state: 'on',
+        flameDataQueue,
+        flameGraphStore,
+      }
+      ;(seneca.shared as SenecaSharedInstance).frameRecordings.push(flameRecord)
+      reply({ id })
+    }
+  )
+
+  seneca.add(
+    'sys:flame,cmd:toggle_frame',
+    function pauseFlameFrame(this: any, msg: any, reply: any) {
+      const { id, state } = msg
+      if (!id || !state || (state !== 'on' && state !== 'off')) {
+        return reply({
+          success: false,
+          error:
+            "Missing or incorrect parameter values, please provide 'id' and 'status' ('on'|'off') parameters",
+        })
+      }
+      const frame = (
+        seneca.shared as SenecaSharedInstance
+      ).frameRecordings.find((frameRecord) => frameRecord.id === id)
+      if (!frame) {
+        return reply({
+          success: false,
+          error: "No 'FrameRecord' was found for the given 'id' parameter",
+        })
+      }
+      const oldFrames = (
+        seneca.shared as SenecaSharedInstance
+      ).frameRecordings.filter((frameRecord) => frameRecord.id !== id)
+      ;(seneca.shared as SenecaSharedInstance).frameRecordings = [
+        ...oldFrames,
+        { ...frame, state },
+      ]
+    }
+  )
+
+  seneca.add(
+    'sys:flame,cmd:get_frame',
+    function getFlameFrame(this: any, msg: any, reply: any) {
+      const { id } = msg
+      if (!id) {
+        return reply({
+          success: false,
+          error:
+            "Missing or incorrect parameter values, please provide 'id' parameter",
+        })
+      }
+      const frame = (
+        seneca.shared as SenecaSharedInstance
+      ).frameRecordings.find((frameRecord) => frameRecord.id === id)
+      if (!frame) {
+        return reply({
+          success: false,
+          error: "No 'FrameRecord' was found for the given 'id' parameter",
+        })
+      }
+      const data = frame.flameGraphStore.get()
+      reply({ success: true, data })
+    }
+  )
+
+  seneca.add(
+    'sys:flame,cmd:destroy_flame',
+    function destroyFlameFrame(this: any, msg: any, reply: any) {
+      const { id } = msg
+      if (!id) {
+        return reply({
+          success: false,
+          error:
+            "Missing or incorrect parameter values, please provide 'id' parameter",
+        })
+      }
+      const frame = (
+        seneca.shared as SenecaSharedInstance
+      ).frameRecordings.find((frameRecord) => frameRecord.id === id)
+      if (!frame) {
+        return reply({
+          success: false,
+          error: "No 'FrameRecord' was found for the given 'id' parameter",
+        })
+      }
+      const data = frame.flameGraphStore.get()
+      const newFrameRecords = (
+        seneca.shared as SenecaSharedInstance
+      ).frameRecordings.filter((frameRecord) => frameRecord.id !== id)
+      ;(seneca.shared as SenecaSharedInstance).frameRecordings = newFrameRecords
+      reply({ success: true, data })
     }
   )
 }

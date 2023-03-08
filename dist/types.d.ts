@@ -16,13 +16,23 @@ export interface FlameNode {
 export interface SenecaSharedInstance {
     flameDataQueue: FlameDataQueue;
     flameGraphStore: FlameGraphStore;
+    frameRecordings: FlameRecord[];
 }
+/**
+ *
+ */
+export type FlameRecord = {
+    id: string;
+    state: 'on' | 'off' | 'destroyed';
+    flameDataQueue: FlameDataQueue;
+    flameGraphStore: FlameGraphStore;
+};
 export interface SpecMetadataPlugin {
     full: string;
     name: string;
     fullname: string;
 }
-export declare type SpecMetadataParent = string[];
+export type SpecMetadataParent = string[];
 export interface SpecMetadataTrace {
     desc: SpecMetadataParent[];
     trace: SpecMetadataTrace[];
@@ -58,7 +68,7 @@ export interface SpecData {
     has_callback: boolean;
     err?: string;
 }
-export declare type NodeQueueData = {
+export type NodeQueueData = {
     id: string;
     pattern: string;
     action: string;

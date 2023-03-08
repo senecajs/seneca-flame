@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * The `FlameDataQueue` class is responsible for managing
  * the queue, wich is the data that will be processed and
  * inserted into the `FlameGraphStore` class.
-*/
+ */
 class FlameDataQueue {
     constructor(flameGraphStore) {
         this.flameGraphStore = flameGraphStore;
