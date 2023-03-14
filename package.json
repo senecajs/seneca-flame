@@ -1,6 +1,6 @@
 {
   "name": "@seneca/flame",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "main": "dist/flame.js",
   "type": "commonjs",
   "types": "dist/flame.d.ts",
