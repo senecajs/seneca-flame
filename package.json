@@ -29,6 +29,9 @@
     "prettier": "prettier --write --no-semi --single-quote *.ts src/*.ts"
   },
   "license": "MIT",
+  "contributors": [
+    "Vitor Lelis (https://github.com/vitorclelis96)"
+  ],
   "files": [
     "dist",
     "src/**/*.ts",
