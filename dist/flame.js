@@ -53,19 +53,12 @@ function flame(options) {
         done();
     });
     seneca.outward((ctxt, data) => {
-        if (options.capture) {
-            const length = seneca.shared.frameRecordings.filter((frameRecord) => frameRecord.state === 'on').length;
-            if (!length)
-                return;
-        }
         const finalData = ctxt.data || data;
         const nodeQueueData = outwardHandler(finalData, options);
         if (nodeQueueData) {
             if (options.capture) {
-                ;
                 seneca.shared.flameDataQueue.push(nodeQueueData);
             }
-            ;
             seneca.shared.frameRecordings.forEach((frameRecord) => {
                 if (frameRecord.state === 'on') {
                     frameRecord.flameDataQueue.push(nodeQueueData);
