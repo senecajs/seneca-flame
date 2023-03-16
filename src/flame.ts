@@ -61,23 +61,15 @@ function flame(this: any, options: any) {
   })
 
   seneca.outward((ctxt: any, data: any) => {
-    if (options.capture) {
-      const length = (
-        seneca.shared as SenecaSharedInstance
-      ).frameRecordings.filter(
-        (frameRecord) => frameRecord.state === 'on'
-      ).length
-      if (!length) return
-    }
     const finalData = ctxt.data || data
     const nodeQueueData = outwardHandler(finalData, options)
     if (nodeQueueData) {
       if (options.capture) {
-        ;(seneca.shared as SenecaSharedInstance).flameDataQueue.push(
+        (seneca.shared as SenecaSharedInstance).flameDataQueue.push(
           nodeQueueData
         )
       }
-      ;(seneca.shared as SenecaSharedInstance).frameRecordings.forEach(
+      (seneca.shared as SenecaSharedInstance).frameRecordings.forEach(
         (frameRecord) => {
           if (frameRecord.state === 'on') {
             frameRecord.flameDataQueue.push(nodeQueueData)
@@ -154,8 +146,8 @@ function flame(this: any, options: any) {
         state: 'on',
         flameDataQueue,
         flameGraphStore,
-      }
-      ;(seneca.shared as SenecaSharedInstance).frameRecordings.push(flameRecord)
+      };
+      (seneca.shared as SenecaSharedInstance).frameRecordings.push(flameRecord)
       reply({ id })
     }
   )
@@ -182,8 +174,8 @@ function flame(this: any, options: any) {
       }
       const oldFrames = (
         seneca.shared as SenecaSharedInstance
-      ).frameRecordings.filter((frameRecord) => frameRecord.id !== id)
-      ;(seneca.shared as SenecaSharedInstance).frameRecordings = [
+      ).frameRecordings.filter((frameRecord) => frameRecord.id !== id);
+      (seneca.shared as SenecaSharedInstance).frameRecordings = [
         ...oldFrames,
         { ...frame, state },
       ]
@@ -238,8 +230,8 @@ function flame(this: any, options: any) {
       const data = frame.flameGraphStore.get()
       const newFrameRecords = (
         seneca.shared as SenecaSharedInstance
-      ).frameRecordings.filter((frameRecord) => frameRecord.id !== id)
-      ;(seneca.shared as SenecaSharedInstance).frameRecordings = newFrameRecords
+      ).frameRecordings.filter((frameRecord) => frameRecord.id !== id);
+      (seneca.shared as SenecaSharedInstance).frameRecordings = newFrameRecords
       reply({ success: true, data })
     }
   )

@@ -40,5 +40,17 @@ describe('flame', () => {
 
     const rootPlugin = flameChart.children.find((c) => c.name === 'root$')
     expect(rootPlugin).not.toBeNull()
+
+    // Checks if it creates and gets data for individual graph's
+    const { id } = await seneca.post('sys:flame,cmd:create_frame')
+
+    await seneca.post('a:1')
+    await sleep(1000)
+
+    const { success, data } = await seneca.post(`sys:flame,cmd:get_frame,id:${id}`);
+    expect(success).toBe(true)
+    expect(data).not.toBeNull()
+
+    expect(data.children).toHaveLength(1)
   })
 })
