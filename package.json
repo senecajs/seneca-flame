@@ -1,26 +1,29 @@
 {
   "name": "@seneca/flame",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "main": "dist/flame.js",
   "type": "commonjs",
   "types": "dist/flame.d.ts",
-  "description": "Handle incoming messages within other frameworks.",
-  "homepage": "https://github.com/senecajs/seneca-gateway",
+  "description": "Seneca plugin that records action timings as flame graph data.",
+  "homepage": "https://github.com/senecajs/seneca-flame",
   "keywords": [
     "seneca",
-    "gateway"
+    "flame",
+    "flame-graph",
+    "debug",
+    "plugin"
   ],
   "author": "Richard Rodger - richardrodger.com",
   "repository": {
     "type": "git",
-    "url": "git://github.com/senecajs/seneca-gateway.git"
+    "url": "git+https://github.com/senecajs/seneca-flame.git"
   },
   "scripts": {
     "test": "jest --coverage",
     "test-some": "jest -t",
     "test-watch": "jest --coverage --watchAll",
     "watch": "tsc -w -d",
-    "build": "tsc -d",
+    "build": "tsc -d && cp -r src/Snapshot/html dist/Snapshot/",
     "clean": "rm -rf node_modules yarn.lock package-lock.json",
     "reset": "npm run clean && npm i && npm test",
     "repo-tag": "REPO_VERSION=`node -e \"console.log(require('./package').version)\"` && echo TAG: v$REPO_VERSION && git commit -a -m v$REPO_VERSION && git push && git tag v$REPO_VERSION && git push --tags;",
@@ -37,30 +40,29 @@
     "src/**/*.ts",
     "LICENSE"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
-    "node": ">=12"
+    "node": ">=24"
   },
   "devDependencies": {
-    "@seneca/maintain": "^0.0.22",
-    "@seneca/repl": "^5.0.1",
+    "@seneca/repl": "^10.0.0",
     "@types/jest": "^28.1.6",
     "@types/lodash": "^4.14.182",
+    "@types/node": "^24.0.0",
     "esbuild": "^0.14.54",
     "esbuild-jest": "^0.5.0",
     "express": "4.18.1",
     "jest": "^28.1.3",
     "prettier": "^2.8.4",
-    "seneca": "3.30.0",
-    "seneca-msg-test": "^3.4.0",
-    "seneca-promisify": ">=3",
-    "typescript": "^4.7.4"
+    "seneca": "^4.0.0",
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "seneca": ">=3",
-    "seneca-promisify": ">=3"
+    "seneca": "^4.0.0"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
-    "seneca-promisify": ">=3"
+    "lodash": "^4.17.21"
   }
 }

@@ -30,6 +30,10 @@ function outwardHandler(spec: SpecData, options: any) {
   }
   const { meta } = spec
   const { id, pattern, action, end, start, plugin } = meta
+  // No plugin when no action ran, for example when no pattern matched.
+  if (!plugin) {
+    return
+  }
   const { name } = plugin
   if (name === 'debug' || name === 'flame') {
     return
@@ -79,13 +83,11 @@ function flame(this: any, options: any) {
     }
   })
 
-  seneca.add(
-    'role:seneca,cmd:close',
-    function (this: any, _msg: any, reply: any) {
-      options.capture = false
-      reply()
-    }
-  )
+  // Stop capturing when the instance closes. Seneca runs the close actions
+  // of other plugins as well.
+  this.destroy(function closeFlame() {
+    options.capture = false
+  })
 
   seneca.add('sys:flame', function (this: any, msg: any, reply: any) {
     const { capture } = msg
@@ -112,7 +114,7 @@ function flame(this: any, options: any) {
       const validFormats = ['json', 'html']
       const { format } = msg
       if (!format || !validFormats.includes(format)) {
-        reply({ message: 'No format found.' })
+        return reply({ message: 'No format found.' })
       }
       const { generateJson, generateHtml } = Snapshot(seneca)
       switch (format) {
@@ -179,6 +181,7 @@ function flame(this: any, options: any) {
         ...oldFrames,
         { ...frame, state },
       ]
+      reply({ success: true })
     }
   )
 

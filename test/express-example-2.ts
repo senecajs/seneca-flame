@@ -8,7 +8,7 @@ setupSeneca()
 function setupSeneca() {
   Seneca()
     .test()
-    .use('repl', { port: 10015 })
+    .use('@seneca/repl', { port: 10015 })
     /*
     .use('debug', {
 			express: {

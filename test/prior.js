@@ -2,9 +2,8 @@ const Seneca = require('seneca')
 
 let seneca = Seneca({ legacy: false })
   .test('print')
-  .use('promisify')
   .use('..')
-  .use('repl', { port: 40404 })
+  .use('@seneca/repl', { port: 40404 })
   .add('a:1', function f1(msg, reply, meta) {
     console.log(meta)
     let start = Date.now()

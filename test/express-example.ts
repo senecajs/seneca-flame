@@ -8,7 +8,7 @@ setupSeneca()
 function setupSeneca() {
   Seneca()
     .test()
-    .use('repl')
+    .use('@seneca/repl')
     .use(FlamePlugin, { capture: true })
     .add('a:1', function a1(msg, reply, meta) {
       setTimeout(() => {
