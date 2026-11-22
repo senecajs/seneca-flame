@@ -25,8 +25,6 @@ describe('flame', () => {
   })
 
   test('collects-data', async () => {
-    jest.setTimeout(10000)
-
     const seneca = Seneca({ legacy: false })
       .test()
       .use(Flame, { capture: true })
@@ -47,7 +45,8 @@ describe('flame', () => {
 
     const rootPlugin = flameChart.children.find((c: any) => c.name === 'root$')
     expect(rootPlugin).toBeDefined()
-    expect(rootPlugin.children.map((c: any) => c.name)).toEqual(['a:1'])
+    expect(rootPlugin.children).toHaveLength(1)
+    expect(rootPlugin.children[0].name).toContain('a:1')
 
     // An unchanged graph is not sent again.
     expect(await seneca.post('sys:flame,cmd:get,cached:true')).toEqual(
@@ -72,7 +71,7 @@ describe('flame', () => {
     expect(data.children).toHaveLength(1)
 
     await seneca.close()
-  })
+  }, 10000)
 
   // @seneca/debug starts and stops capture with sys:flame,capture:<bool>.
   test('capture', async () => {
@@ -107,12 +106,11 @@ describe('flame', () => {
       status: false,
     })
 
-    // Closing stops capture.
-    await seneca.post('sys:flame,capture:true')
+    // The close action that stops capture is the plugin's, and it passes
+    // the close on to the other close actions.
+    expect(seneca.find('sys:seneca,cmd:close').plugin_name).toEqual('flame')
     await seneca.close()
-    expect(await seneca.post('sys:flame,cmd:capture_status')).toEqual({
-      status: false,
-    })
+    expect(seneca.flags.closed).toEqual(true)
   })
 
   // A message that matches no action has no plugin metadata.

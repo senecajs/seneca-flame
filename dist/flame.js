@@ -25,6 +25,10 @@ function outwardHandler(spec, options) {
     }
     const { meta } = spec;
     const { id, pattern, action, end, start, plugin } = meta;
+    // No plugin when no action ran, for example when no pattern matched.
+    if (!plugin) {
+        return;
+    }
     const { name } = plugin;
     if (name === 'debug' || name === 'flame') {
         return;
@@ -66,9 +70,10 @@ function flame(options) {
             });
         }
     });
-    seneca.add('role:seneca,cmd:close', function (_msg, reply) {
+    // Stop capturing when the instance closes. Seneca runs the close actions
+    // of other plugins as well.
+    this.destroy(function closeFlame() {
         options.capture = false;
-        reply();
     });
     seneca.add('sys:flame', function (msg, reply) {
         const { capture } = msg;
@@ -93,7 +98,7 @@ function flame(options) {
         const validFormats = ['json', 'html'];
         const { format } = msg;
         if (!format || !validFormats.includes(format)) {
-            reply({ message: 'No format found.' });
+            return reply({ message: 'No format found.' });
         }
         const { generateJson, generateHtml } = (0, Snapshot_1.Snapshot)(seneca);
         switch (format) {
@@ -143,6 +148,7 @@ function flame(options) {
             ...oldFrames,
             { ...frame, state },
         ];
+        reply({ success: true });
     });
     seneca.add('sys:flame,cmd:get_frame', function getFlameFrame(msg, reply) {
         const { id } = msg;

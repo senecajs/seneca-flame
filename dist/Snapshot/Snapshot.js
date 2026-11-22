@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Snapshot = void 0;
+exports.Snapshot = Snapshot;
 const fs_1 = require("fs");
 const util_1 = require("util");
 const mkDirAsync = (0, util_1.promisify)(fs_1.mkdir);
@@ -46,5 +46,4 @@ function Snapshot(seneca) {
     };
     return { generateJson, generateHtml };
 }
-exports.Snapshot = Snapshot;
 //# sourceMappingURL=Snapshot.js.map
