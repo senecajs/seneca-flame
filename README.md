@@ -12,8 +12,10 @@
 
 ## Install
 
+Requires Seneca 4 and Node.js 24 or later.
+
 ```sh
-npm install @seneca/flame
+npm install seneca@^4 @seneca/flame
 ```
 
 ## Quick Example
@@ -22,7 +24,7 @@ npm install @seneca/flame
 const Seneca = require('seneca')
 
 Seneca()
-  .use('flame', { capture: true })
+  .use('@seneca/flame', { capture: true })
 ```
 
 After booting, `seneca-flame` will start to capture and aggregate data automatically.

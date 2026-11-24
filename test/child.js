@@ -2,13 +2,8 @@ const Seneca = require('seneca')
 
 let seneca = Seneca({ legacy: false })
   .test('print')
-  .use('promisify')
   .use('..')
-  .use('repl', { port: 41414 })
-
-  // TOOD: fix seneca/@flame to work with top level messages:
-  // Uncaught TypeError: Cannot destructure property 'name' of 'plugin' as it is undefined.
-  //    at outwardHandler (/Users/richard/Projects/seneca/flame/dist/flame.js:25:13)
+  .use('@seneca/repl', { port: 41414 })
 
   .use(function foo() {
     this.add('cc:3', function f3(msg, reply, meta) {
